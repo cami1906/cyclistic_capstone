@@ -1,3 +1,67 @@
+# Cyclistic Case Study: Data Analysis with Divvy Bikes Data
+
+This repository contains the SQL script used for importing, compiling, and analyzing the Cyclistic Case Study as part of the Google Data Analytics Professional Certificate Capstone Project.
+
+## Overview
+
+- **Project Purpose**: Analyze Divvy Bikes data to understand usage patterns and user behavior.
+- **Data Source**: [Divvy Bikes System Data](https://www.divvybikes.com/system-data)
+- **Cloud Storage**: The data is stored in Amazon Web Services (AWS).
+
+## Steps Taken
+
+1. **Data Acquisition**:
+   - Downloaded individual CSV documents from the Divvy Bikes data source.
+   - Each CSV corresponds to a specific month (January through December 2023).
+
+2. **Data Preparation**:
+   - Imported each CSV into separate tables.
+   - Regularized data types for consistency.
+   - Combined all tables into a single dataset.
+
+3. **Data Inspection**:
+   - Inspected the combined data for anomalies or inconsistencies.
+
+4. **Data Cleaning**:
+   - Identified and excluded data with anomalies (if any).
+
+5. **SQL Queries**:
+   - Created SQL queries for data visualizations and analysis.
+
+## Data Columns
+
+The data contains 13 columns for each ride record:
+- `ride_id`
+- `rideable_type`
+- `started_at`
+- `ended_at`
+- `start_station_name`
+- `start_station_id`
+- `end_station_name`
+- `end_station_id`
+- `start_lat`
+- `start_lng`
+- `end_lat`
+- `end_lng`
+- `member_casual`
+
+## File Naming Convention
+
+- Original files were downloaded from [Divvy Bikes Data](https://divvy-tripdata.s3.amazonaws.com/index.html).
+- Each file corresponds to a specific month (e.g., '202301_tripdata' for January 2023).
+- Adjusted TIMESTAMP format in 'started_at' and 'ended_at' columns to YYYY-MM-DD h:mm:ss for compatibility with BigQuery.
+
+## Data Quality
+
+- The data is reliable, original, comprehensive, and current.
+- It provides valuable insights for answering project questions.
+- Further sorting, filtering, and SQL calculations are needed to understand user behavior.
+
+
+
+
+
+
 /*
 This is the SQL script used to import, compile and analyse the Cyclistic Case 
 Study for the Capstone Project of the Google Data Analytics Professional Certificate.
