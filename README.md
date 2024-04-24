@@ -1,7 +1,3 @@
-Certainly! Let's structure the code documentation for the steps you've described. Here's the revised version:
-
----
-
 # Cyclistic Case Study: Data Analysis with Divvy Bikes Data
 
 This repository contains the SQL script used for importing, compiling, and analyzing the Cyclistic Case Study as part of the Google Data Analytics Professional Certificate Capstone Project.
@@ -251,11 +247,12 @@ ORDER BY number_of_trips DESC
 
 ### Top 5 Trip Durations by Bike Type (Members)
 
-| **Bike Type** | **Minutes per Trip** | **Number of Trips** |
-|---------------|----------------------|----------------------|
-| Electric Bike | 5                    | 148,714              |
-| ...           | ...                  | ...                  |
-
+- **Electric Bikes**:| Minutes per trip: **5** |  Number of trips: **148,714**
+- **Electric Bikes**:| Minutes per trip: **4** | Number of trips: **146,475**
+- **Classic Bikes**: | Minutes per trip: **5**  | Number of trips: **140,994**
+- **Electric Bikes**:| Minutes per trip: **6** | Number of trips: **140,384**
+- **Classic Bikes**: | Minutes per trip: **4**  | Number of trips: **137,156**
+  
 ```sql
 SELECT 
 DISTINCT type_of_bike,
@@ -267,6 +264,7 @@ GROUP BY minutes_per_trip, type_of_bike
 ORDER BY number_of_trips DESC 
 LIMIT 5
 ```
+
 ### Most Popular Days for Riding
 
 - **Casual Riders**:
@@ -323,10 +321,6 @@ GROUP BY month
 ORDER BY number_of_trips DESC
 ```
 
-Certainly! Let's structure the additional analysis in the same format:
-
----
-
 ## Popular Riding Times by Membership Status
 
 ### Casual Riders
@@ -358,6 +352,17 @@ GROUP BY membership_status, time_of_day
 ORDER BY number_of_rides DESC
 ```
 
+## Findings
+
+The results of the analysis show that:
+- Most popular day with casual riders is Saturday, and least popular is Tuesday. The most popular day for members is  Wednesday, and least popular is Sunday.
+- Most poplular month for casual riders is July, and least popular is December. Most popular month for member riders is August, and least is February.
+- Most book rides for both groups occurs during hours 17, 18, and 16 in order (i.e. 5pm, 6pm, and 4pm).
+
+## Recommendations
+
+1. Launch memberships that target users of the system in Summer, as well as weekend membership packages. These measures might entice casual riders to pay for a membership.
+2. Create a referral system that can benefit both members and the company. The former might benefit via discounts in their membership cost, whereas the latter might benefit from an increase in users from potential new users referred to the company by existing users. 
 
 
 
