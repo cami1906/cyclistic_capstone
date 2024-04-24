@@ -325,8 +325,8 @@ ORDER BY number_of_trips DESC
 
 ### Casual Riders
 
-- Most popular time of day: **5:00 PM** (peak hour) with **387,375 trips**.
-- Least popular time of day: **2:00 AM** with **222,314 trips**.
+- Most popular time of day: **5:00 PM** (peak hour) with **189,276 trips**.
+- Least popular time of day: **4:00 AM** with **5,724 trips**.
 ```sql
 SELECT 
 membership_status,
@@ -339,8 +339,8 @@ ORDER BY number_of_rides DESC
 ```
 ### Members
 
-- Most popular time of day: **5:00 PM** (peak hour) with **580,166 trips**.
-- Least popular time of day: **2:00 AM** with **402,425 trips**.
+- Most popular time of day: **5:00 PM** (peak hour) with **381,846 trips**.
+- Least popular time of day: **3:00 AM** with **7,824 trips**.
 ```sql
 SELECT 
 membership_status,
