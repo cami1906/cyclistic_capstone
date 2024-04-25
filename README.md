@@ -2,6 +2,8 @@
 
 This repository contains the SQL script used for importing, compiling, and analyzing the Cyclistic Case Study as part of the Google Data Analytics Professional Certificate Capstone Project.
 
+The visualisation of the analysis below is available on my profile in Tableau Public. Follow the link to check it out https://public.tableau.com/app/profile/camilo.toro/viz/cyclistic_capstone_project_17072760478730/Totalridesbyhour
+
 ## Overview
 
 - **Project Purpose**: Analyze Divvy Bikes data to understand usage patterns and user behavior.
@@ -361,7 +363,7 @@ The results of the analysis show that:
 
 ## Recommendations
 
-1. Launch memberships that target users of the system in Summer, as well as weekend membership packages. These measures might entice casual riders to pay for a membership.
+1. Launch a membership plan to target users of the system in Summer, as well as weekend membership packages. These measures might entice casual riders to pay for a membership.
 2. Create a referral system that can benefit both members and the company. The former might benefit via discounts in their membership cost, whereas the latter might benefit from an increase in users from potential new users referred to the company by existing users. 
 
 
