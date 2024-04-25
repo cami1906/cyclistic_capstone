@@ -2,7 +2,7 @@
 
 This repository contains the SQL script used for importing, compiling, and analyzing the Cyclistic Case Study as part of the Google Data Analytics Professional Certificate Capstone Project.
 
-The visualisation of the analysis below is available on my profile in Tableau Public. Follow the link to check it out https://public.tableau.com/app/profile/camilo.toro/viz/cyclistic_capstone_project_17072760478730/Totalridesbyhour
+The visualisation of the analysis below is available on my profile in Tableau Public. Follow the link to check it out https://public.tableau.com/app/profile/camilo.toro/viz/cyclistic_capstone_project_17072760478730/Presentation
 
 ## Overview
 
