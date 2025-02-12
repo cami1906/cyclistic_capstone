@@ -61,28 +61,28 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 
 2. No missing `rideable_type` values:
    ```sql
-   SELECT COUNT(*) AS missing_ride_id
+   SELECT COUNT(*) AS missing_rideable_type
    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
-   WHERE ride_id IS NULL;
+   WHERE rideable_type IS NULL;
    ```
 
 3. No missing `started_at` values:
    ```sql
-   SELECT COUNT(*)
+   SELECT COUNT(*) AS missing_started_at
    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE started_at IS NULL;
    ```
 
 4. No missing `ended_at` values:
    ```sql
-   SELECT COUNT(*)
+   SELECT COUNT(*) AS missing_ended_at
    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE ended_at IS NULL;
    ```
 
 5. No missing `member_casual` values:
    ```sql
-   SELECT COUNT(*)
+   SELECT COUNT(*) AS missing_member_casual
    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE member_casual IS NULL;
    ```
@@ -101,39 +101,18 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 - Ordered the data by `start_time`.
 
 
---This query creates a new table. In this new table, I created three new columns called 'day_of_week' and 'minutes_per_trip' and 'month'. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
+--This query creates a new table. In this new table, I created three new columns called 'day_of_week', 'month', and 'trip_duration_minutes. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
 
 ```sql
 CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report` AS
 SELECT
   ride_id,
-  rideable_type AS type_of_bike,
+  rideable_type AS bike_type,
   started_at AS start_time,
-  ended_at AS finish_time,
-  CASE EXTRACT(DAYOFWEEK FROM started_at)
-    WHEN 1 THEN 'Sun'
-    WHEN 2 THEN 'Mon'
-    WHEN 3 THEN 'Tue'
-    WHEN 4 THEN 'Wed'
-    WHEN 5 THEN 'Thur'
-    WHEN 6 THEN 'Frid'
-    WHEN 7 THEN 'Sat'
-  END AS day_of_week,
-  CASE EXTRACT(MONTH FROM started_at) 
-    WHEN 1 THEN 'Jan'
-    WHEN 2 THEN 'Feb'
-    WHEN 3 THEN 'Mar'
-    WHEN 4 THEN 'Apr'
-    WHEN 5 THEN 'May'
-    WHEN 6 THEN 'Jun'
-    WHEN 7 THEN 'July'
-    WHEN 8 THEN 'Aug'
-    WHEN 9 THEN 'Sep'
-    WHEN 10 THEN 'Oct'
-    WHEN 11 THEN 'Nov'
-    WHEN 12 THEN 'Dec'
-  END AS month,
-  DATETIME_DIFF(ended_at, started_at, MINUTE) AS minutes_per_trip,
+  ended_at AS end_time,
+  FORMAT_TIMESTAMP('%a', started_at) AS day_of_week,
+  FORMAT_TIMESTAMP('%b', started_at) AS month,
+  TIMESTAMP_DIFF(ended_at, started_at, MINUTE) AS trip_duration_minutes,
   start_station_name,
   start_station_id,
   end_station_name,
@@ -142,17 +121,27 @@ SELECT
   start_lng,
   end_lat,
   end_lng,
-  member_casual AS membership_status 
+  member_casual AS user_type
 FROM
-  (
-    SELECT *
-    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
-    WHERE rideable_type != "docked_bike" 
-      AND DATETIME_DIFF(ended_at, started_at, MINUTE) > 0
-  ) AS filtered_data
+  `snappy-elf-359008.Cyclistic.12month_tripdata`
+WHERE
+  rideable_type != 'docked_bike'
+  AND TIMESTAMP_DIFF(ended_at, started_at, MINUTE) > 0
 ORDER BY
-  start_time ASC;
+  start_time;
+
+-- Trends and Relationships in Bike Usage
+-- Trip Duration Analysis
+-- Maximum Trip Duration
+SELECT
+  user_type,
+  MAX(trip_duration_minutes) AS max_trip_duration
+FROM
+  `snappy-elf-359008.Cyclistic.trip_data_report`
+GROUP BY
+  user_type;
 ```
+
 # Trends and Relationships in Bike Usage
 
 In this section, we explore trends and relationships in bike usage data from Cyclistic, focusing on differences between annual members and casual riders. We'll analyze key metrics related to trip duration and bike types.
@@ -165,18 +154,18 @@ In this section, we explore trends and relationships in bike usage data from Cyc
   - The maximum trip duration for casual riders is **1,560 minutes**.
 ```sql
 SELECT 
-ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_casual
+ROUND(MAX(trip_duration_minutes), 2) AS max_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
+WHERE user_type = 'casual'
 ```
 
 - **Member Riders**:
   - The maximum trip duration for member riders is also **1,560 minutes**.
 ```sql
 SELECT 
-ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_member
+ROUND(MAX(trip_duration_minutes), 2) AS max_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
+WHERE user_type = 'member'
 ```
 
 ### Minimum Trip Duration
@@ -185,18 +174,18 @@ WHERE membership_status = 'member'
   - The minimum trip duration for casual riders is **1 minute**.
 ```sql
 SELECT 
-ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_casual
+ROUND(MIN(trip_duration_minutes), 2) AS min_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
+WHERE user_type = 'casual'
 ```
 
 - **Member Riders**:
   - The minimum trip duration for member riders is also **1 minute**.
 ```sql
 SELECT 
-ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_member
+ROUND(MIN(trip_duration_minutes), 2) AS min_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
+WHERE user_type = 'member'
 ```
 
 ### Average Trip Duration
@@ -205,17 +194,17 @@ WHERE membership_status = 'member'
   - The average trip duration for casual riders is **22.48 minutes**.
 ```sql
 SELECT 
-ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_casual
+ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
+WHERE user_type = 'casual'
 ```
 - **Member Riders**:
   - The average trip duration for member riders is **12.73 minutes**.
 ```sql
 SELECT 
-ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_member
+ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration_minutes
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
+WHERE user_type = 'member'
 ```
 ## Bike Type Analysis
 
@@ -235,13 +224,13 @@ WHERE membership_status = 'member'
 
 ```sql
 SELECT 
-DISTINCT type_of_bike,
-minutes_per_trip,
+DISTINCT bike_type,
+trip_duration_minutes,
 COUNT(ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
-GROUP BY minutes_per_trip, type_of_bike
-ORDER BY number_of_trips DESC 
+WHERE user_type = 'casual'
+GROUP BY trip_duration_minutes, bike_type
+ORDER BY trip_duration_minutes DESC 
 LIMIT 20
 ```
 ### Most Frequent Bike Type for Casual Riders
@@ -250,11 +239,11 @@ LIMIT 20
 - **Classic Bikes**: Casual riders took **870,139 trips** on classic bikes.
 ```sql
 SELECT 
-type_of_bike,
+bike_type,
 COUNT(DISTINCT ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
-GROUP BY type_of_bike
+WHERE user_type = 'casual'
+GROUP BY bike_type
 ORDER BY number_of_trips DESC 
 ```
 
@@ -268,12 +257,12 @@ ORDER BY number_of_trips DESC
   
 ```sql
 SELECT 
-DISTINCT type_of_bike,
-minutes_per_trip,
+DISTINCT bike_type,
+trip_duration_minutes,
 COUNT(ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
-GROUP BY minutes_per_trip, type_of_bike
+WHERE user_type = 'member'
+GROUP BY trip_duration_minutes, bike_type
 ORDER BY number_of_trips DESC 
 LIMIT 5
 ```
@@ -286,10 +275,10 @@ LIMIT 5
  
 ```sql
 SELECT 
-COUNT(membership_status) AS number_of_trips,
+COUNT(user_type) AS number_of_trips,
 day_of_week
-FROM snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
+WHERE user_type = 'casual'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
 ```
@@ -299,10 +288,10 @@ ORDER BY number_of_trips DESC
   - Least popular day: **Sunday** (402,425 trips)
 ```sql
 SELECT 
-COUNT(membership_status) AS number_of_trips,
+COUNT(user_type) AS number_of_trips,
 day_of_week
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
+WHERE user_type = 'member'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
 ```
@@ -311,25 +300,25 @@ ORDER BY number_of_trips DESC
 - **Casual Riders**:
   - Most popular month: **July**
   - Least popular month: **January**
-``sql
+```sql
 SELECT 
-COUNT(membership_status) AS number_of_trips,
+COUNT(user_type) AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
+WHERE user_type = 'casual'
 GROUP BY month
 ORDER BY number_of_trips DESC
-``
+```
 
 - **Members**
   - Most popular month: **August**
   - Least popular month: **February**
 ```sql
 SELECT 
-COUNT(membership_status) AS number_of_trips,
+COUNT(user_type) AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
+WHERE user_type = 'member'
 GROUP BY month
 ORDER BY number_of_trips DESC
 ```
@@ -342,12 +331,12 @@ ORDER BY number_of_trips DESC
 - Least popular time of day: **4:00 AM** with **5,724 trips**.
 ```sql
 SELECT 
-membership_status,
+user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(*) as number_of_rides
+COUNT(*) AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'casual'
-GROUP BY membership_status, time_of_day
+WHERE user_type = 'casual'
+GROUP BY user_type, time_of_day
 ORDER BY number_of_rides DESC
 ```
 ### Members
@@ -356,12 +345,12 @@ ORDER BY number_of_rides DESC
 - Least popular time of day: **3:00 AM** with **7,824 trips**.
 ```sql
 SELECT 
-membership_status,
+user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(*) as number_of_rides
+COUNT(*) AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
-WHERE membership_status = 'member'
-GROUP BY membership_status, time_of_day
+WHERE user_type = 'member'
+GROUP BY user_type, time_of_day
 ORDER BY number_of_rides DESC
 ```
 
