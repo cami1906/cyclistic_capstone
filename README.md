@@ -205,7 +205,7 @@ WITH bike_stats AS (
     user_type,
     bike_type,
     ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration,
-    COUNT(ride_id) AS number_of_trips
+    COUNT(DISTINCT ride_id) AS number_of_trips
   FROM 
     `snappy-elf-359008.Cyclistic.trip_data_report`
   GROUP BY 
@@ -226,7 +226,7 @@ SELECT
   bike_type,
   user_type,
   avg_trip_duration,
-  FORMAT('%,d', number_of_trips) AS formatted_number_of_trips
+  FORMAT("%'d", number_of_trips) AS formatted_number_of_trips
 FROM 
   ranked_bikes
 ORDER BY 
@@ -238,10 +238,10 @@ ORDER BY
 - Members prefer **classic bicycles**, making **1,801,660**.
 - Casual riders prefer **electric bicycles**, making **1,080,286 trips**.
 ```sql
-SELECT DISTINCT
+SELECT 
   user_type,
   bike_type,
-  COUNT(ride_id) AS number_of_trips
+  COUNT(DISTINCT ride_id) AS number_of_trips
 FROM 
   `snappy-elf-359008.Cyclistic.trip_data_report`
 GROUP BY 
@@ -257,10 +257,9 @@ ORDER BY
 ### Top 20 Trip Durations by Bike Type (Casual Riders)
 
 ```sql
-SELECT 
-DISTINCT bike_type,
+SELECT bike_type,
 trip_duration_minutes,
-COUNT(ride_id) as number_of_trips
+COUNT(DISTINCT ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
 GROUP BY trip_duration_minutes, bike_type
@@ -272,8 +271,7 @@ LIMIT 20
 - **Electric Bikes**: Casual riders took **1,080,286 trips** on electric bikes.
 - **Classic Bikes**: Casual riders took **870,140 trips** on classic bikes.
 ```sql
-SELECT 
-bike_type,
+SELECT bike_type,
 COUNT(DISTINCT ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
@@ -290,10 +288,9 @@ ORDER BY number_of_trips DESC
 - **Classic Bikes**: | Minutes per trip: **4**  | Number of trips: **137,156**
   
 ```sql
-SELECT 
-DISTINCT bike_type,
+SELECT bike_type,
 trip_duration_minutes,
-COUNT(ride_id) as number_of_trips
+COUNT(DISTINCT ride_id) as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
 GROUP BY trip_duration_minutes, bike_type
@@ -309,7 +306,7 @@ LIMIT 5
  
 ```sql
 SELECT 
-COUNT(user_type) AS number_of_trips,
+COUNT(DISTINCT ride_id) AS number_of_trips,
 day_of_week
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
@@ -322,7 +319,7 @@ ORDER BY number_of_trips DESC
   - Least popular day: **Sunday** (402,425 trips)
 ```sql
 SELECT 
-COUNT(user_type) AS number_of_trips,
+COUNT(DISTINCT ride_id) AS number_of_trips,
 day_of_week
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
@@ -336,7 +333,7 @@ ORDER BY number_of_trips DESC
   - Least popular month: **January**
 ```sql
 SELECT 
-COUNT(user_type) AS number_of_trips,
+COUNT(DISTINCT ride_id) AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
@@ -349,7 +346,7 @@ ORDER BY number_of_trips DESC
   - Least popular month: **February**
 ```sql
 SELECT 
-COUNT(user_type) AS number_of_trips,
+COUNT(DISTINCT ride_id) AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
@@ -367,7 +364,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(*) AS number_of_rides
+COUNT(DISTINCT ride_id) AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
 GROUP BY user_type, time_of_day
@@ -381,7 +378,7 @@ ORDER BY number_of_rides DESC
 SELECT 
 user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(*) AS number_of_rides
+COUNT(DISTINCT ride_id) AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
 GROUP BY user_type, time_of_day
