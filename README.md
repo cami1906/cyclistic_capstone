@@ -17,25 +17,36 @@ The visualisation of the analysis below is available on my profile in Tableau Pu
 The goal of this step is to create a unified table containing ride records from all 12 months (January to December 2023).
 
 ```sql
-CREATE TABLE `model-framing-412705.cyclistic.12month_tripdata` AS
-SELECT
-  *
-FROM
-  `model-framing-412705.cyclistic.202301_tripdata`
-UNION ALL
-SELECT
-  *
-FROM
-  `model-framing-412705.cyclistic.202302_tripdata`
--- ... Repeat for all remaining months ...
-UNION ALL
-SELECT
-  *
-FROM
-  `model-framing-412705.cyclistic.202312_tripdata`;
+CREATE TABLE `snappy-elf-359008.Cyclistic.12month_tripdata` AS
+WITH combined_data AS (
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202301` -- January
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202302` -- February
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202303` -- March
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202304` -- April
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202305` -- May
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202306` -- June
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202307` -- July
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202308` -- August
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202309` -- September
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202310` -- October
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202311` -- November
+  UNION ALL
+  SELECT * FROM `snappy-elf-359008.Cyclistic.tripdata_202312` -- December
+)
+SELECT * FROM combined_data;
 ```
 
-- Result: The combined table contains a total of **5,719,743 rows**.
+- Result: The combined table contains a total of **5,719,877 rows**.
 
 ### Step 2: Data Integrity Checks
 
@@ -50,29 +61,29 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 
 2. No missing `rideable_type` values:
    ```sql
-   SELECT COUNT(*)
-   FROM `model-framing-412705.cyclistic.12month_tripdata`
-   WHERE rideable_type IS NULL;
+   SELECT COUNT(*) AS missing_ride_id
+   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   WHERE ride_id IS NULL;
    ```
 
 3. No missing `started_at` values:
    ```sql
    SELECT COUNT(*)
-   FROM `model-framing-412705.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
    WHERE started_at IS NULL;
    ```
 
 4. No missing `ended_at` values:
    ```sql
    SELECT COUNT(*)
-   FROM `model-framing-412705.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
    WHERE ended_at IS NULL;
    ```
 
 5. No missing `member_casual` values:
    ```sql
    SELECT COUNT(*)
-   FROM `model-framing-412705.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
    WHERE member_casual IS NULL;
    ```
 
@@ -93,7 +104,7 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 --This query creates a new table. In this new table, I created three new columns called 'day_of_week' and 'minutes_per_trip' and 'month'. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
 
 ```sql
-CREATE TABLE `model-framing-412705.cyclistic.trip_data_report` AS
+CREATE TABLE `snappy-elf-359008.cyclistic.trip_data_report` AS
 SELECT
   ride_id,
   rideable_type AS type_of_bike,
@@ -135,7 +146,7 @@ SELECT
 FROM
   (
     SELECT *
-    FROM `model-framing-412705.cyclistic.12month_tripdata`
+    FROM `snappy-elf-359008.cyclistic.12month_tripdata`
     WHERE rideable_type != "docked_bike" 
       AND DATETIME_DIFF(ended_at, started_at, MINUTE) > 0
   ) AS filtered_data
@@ -155,7 +166,7 @@ In this section, we explore trends and relationships in bike usage data from Cyc
 ```sql
 SELECT 
 ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_casual
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 
@@ -164,7 +175,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_member
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 
@@ -175,7 +186,7 @@ WHERE membership_status = 'member'
 ```sql
 SELECT 
 ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_casual
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 
@@ -184,7 +195,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_member
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 
@@ -195,7 +206,7 @@ WHERE membership_status = 'member'
 ```sql
 SELECT 
 ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_casual
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 - **Member Riders**:
@@ -203,7 +214,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_member
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 ## Bike Type Analysis
@@ -227,7 +238,7 @@ SELECT
 DISTINCT type_of_bike,
 minutes_per_trip,
 COUNT(ride_id) as number_of_trips
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY minutes_per_trip, type_of_bike
 ORDER BY number_of_trips DESC 
@@ -241,7 +252,7 @@ LIMIT 20
 SELECT 
 type_of_bike,
 COUNT(DISTINCT ride_id) as number_of_trips
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY type_of_bike
 ORDER BY number_of_trips DESC 
@@ -260,7 +271,7 @@ SELECT
 DISTINCT type_of_bike,
 minutes_per_trip,
 COUNT(ride_id) as number_of_trips
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY minutes_per_trip, type_of_bike
 ORDER BY number_of_trips DESC 
@@ -277,7 +288,7 @@ LIMIT 5
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 day_of_week
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
@@ -290,7 +301,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 day_of_week
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
@@ -304,7 +315,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 month
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY month
 ORDER BY number_of_trips DESC
@@ -317,7 +328,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 month
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY month
 ORDER BY number_of_trips DESC
@@ -334,7 +345,7 @@ SELECT
 membership_status,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
 COUNT(*) as number_of_rides
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY membership_status, time_of_day
 ORDER BY number_of_rides DESC
@@ -348,7 +359,7 @@ SELECT
 membership_status,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
 COUNT(*) as number_of_rides
-FROM `model-framing-412705.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY membership_status, time_of_day
 ORDER BY number_of_rides DESC
