@@ -259,8 +259,8 @@ ORDER BY
 
 ### Classic Bikes vs. Electric Bikes by user_type
 
-- Members prefer **classic bicycles**, making **1,801,659**.
-- Casual riders prefer **electric bicycles**, making **1,080,285 trips**.
+- Members prefer **classic bicycles**, making **1,801,658**.
+- Casual riders prefer **electric bicycles**, making **1,080,283 trips**.
 ```sql
 SELECT 
   user_type,
@@ -292,8 +292,8 @@ LIMIT 20
 ```
 ### Most Frequent Bike Type for Casual Riders
 
-- **Electric Bikes**: Casual riders took **1,080,286 trips** on electric bikes.
-- **Classic Bikes**: Casual riders took **870,140 trips** on classic bikes.
+- **Electric Bikes**: Casual riders took **1,080,283 trips** on electric bikes.
+- **Classic Bikes**: Casual riders took **870,138 trips** on classic bikes.
 ```sql
 SELECT bike_type,
 COUNT (ride_id) as number_of_trips
@@ -306,7 +306,7 @@ ORDER BY number_of_trips DESC
 ### Top 5 Trip Durations by Bike Type (Members)
 
 - **Electric Bikes**:| Minutes per trip: **5** |  Number of trips: **148,714**
-- **Electric Bikes**:| Minutes per trip: **4** | Number of trips: **146,475**
+- **Electric Bikes**:| Minutes per trip: **4** | Number of trips: **146,474**
 - **Classic Bikes**: | Minutes per trip: **5**  | Number of trips: **140,994**
 - **Electric Bikes**:| Minutes per trip: **6** | Number of trips: **140,384**
 - **Classic Bikes**: | Minutes per trip: **4**  | Number of trips: **137,156**
@@ -325,7 +325,7 @@ LIMIT 5
 ### Most Popular Days for Riding
 
 - **Casual Riders**:
-  - Most popular day: **Saturday** (387,375 trips)
+  - Most popular day: **Saturday** (387,374 trips)
   - Least popular day: **Monday** (222,314 trips)
  
 ```sql
@@ -339,8 +339,8 @@ ORDER BY number_of_trips DESC
 ```
 
 - **Members**:
-  - Most popular day: **Thursday** (580,166 trips)
-  - Least popular day: **Sunday** (402,425 trips)
+  - Most popular day: **Thursday** (580,164 trips)
+  - Least popular day: **Sunday** (402,422 trips)
 ```sql
 SELECT 
 COUNT (ride_id) AS number_of_trips,
@@ -382,7 +382,7 @@ ORDER BY number_of_trips DESC
 
 ### Casual Riders
 
-- Most popular time of day: **5:00 PM** (peak hour) with **189,276 trips**.
+- Most popular time of day: **5:00 PM** (peak hour) with **189,274 trips**.
 - Least popular time of day: **4:00 AM** with **5,724 trips**.
 ```sql
 SELECT 
