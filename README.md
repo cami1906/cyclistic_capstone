@@ -101,18 +101,44 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 - Ordered the data by `start_time`.
 
 
---This query creates a new table. In this new table, I created three new columns called 'day_of_week', 'month', and 'trip_duration_minutes. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
+--This query creates a new table. In this new table, I created three new columns called 'day_of_week', 'month', and 'trip_duration_minutes. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'. Finally, this query also deletes duplicate rows. 
 
 ```sql
-CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report1` AS
+CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report` AS
+WITH DeduplicatedData AS (
+  SELECT
+    ride_id,
+    rideable_type AS bike_type,
+    started_at AS start_time,
+    ended_at AS end_time,
+    FORMAT_TIMESTAMP('%a', started_at) AS day_of_week,
+    FORMAT_TIMESTAMP('%b', started_at) AS month,
+    TIMESTAMP_DIFF(ended_at, started_at, MINUTE) AS trip_duration_minutes,
+    start_station_name,
+    start_station_id,
+    end_station_name,
+    end_station_id,
+    start_lat,
+    start_lng,
+    end_lat,
+    end_lng,
+    member_casual AS user_type,
+    ROW_NUMBER() OVER (PARTITION BY ride_id ORDER BY started_at) AS row_num
+  FROM
+    `snappy-elf-359008.Cyclistic.12month_tripdata`
+  WHERE
+    rideable_type != 'docked_bike'
+    AND TIMESTAMP_DIFF(ended_at, started_at, MINUTE) > 0
+)
 SELECT
   ride_id,
-  rideable_type AS bike_type,
-  started_at AS start_time,
-  ended_at AS end_time,
-  FORMAT_TIMESTAMP('%a', started_at) AS day_of_week,
-  FORMAT_TIMESTAMP('%b', started_at) AS month,
-  TIMESTAMP_DIFF(ended_at, started_at, MINUTE) AS trip_duration_minutes,
+  bike_type,
+  start_time,
+  user_type,
+  end_time,
+  day_of_week,
+  month,
+  trip_duration_minutes,
   start_station_name,
   start_station_id,
   end_station_name,
@@ -121,12 +147,10 @@ SELECT
   start_lng,
   end_lat,
   end_lng,
-  member_casual AS user_type
 FROM
-  `snappy-elf-359008.Cyclistic.12month_tripdata`
+  DeduplicatedData
 WHERE
-  rideable_type != 'docked_bike'
-  AND TIMESTAMP_DIFF(ended_at, started_at, MINUTE) > 0
+  row_num = 1
 ORDER BY
   start_time;
 ```
@@ -205,7 +229,7 @@ WITH bike_stats AS (
     bike_type,
     user_type,
     ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration,
-    COUNT(DISTINCT ride_id) AS number_of_trips
+    COUNT ride_id AS number_of_trips
   FROM 
     `snappy-elf-359008.Cyclistic.trip_data_report`
   GROUP BY 
@@ -241,7 +265,7 @@ ORDER BY
 SELECT 
   user_type,
   bike_type,
-  COUNT(DISTINCT ride_id) AS number_of_trips
+  COUNT ride_id AS number_of_trips
 FROM 
   `snappy-elf-359008.Cyclistic.trip_data_report`
 GROUP BY 
@@ -259,7 +283,7 @@ ORDER BY
 ```sql
 SELECT bike_type,
 trip_duration_minutes,
-COUNT(DISTINCT ride_id) as number_of_trips
+COUNT ride_id as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
 GROUP BY trip_duration_minutes, bike_type
@@ -272,7 +296,7 @@ LIMIT 20
 - **Classic Bikes**: Casual riders took **870,140 trips** on classic bikes.
 ```sql
 SELECT bike_type,
-COUNT(DISTINCT ride_id) as number_of_trips
+COUNT ride_id as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
 GROUP BY bike_type
@@ -290,7 +314,7 @@ ORDER BY number_of_trips DESC
 ```sql
 SELECT bike_type,
 trip_duration_minutes,
-COUNT(DISTINCT ride_id) as number_of_trips
+COUNT ride_id as number_of_trips
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
 GROUP BY trip_duration_minutes, bike_type
@@ -306,7 +330,7 @@ LIMIT 5
  
 ```sql
 SELECT 
-COUNT(DISTINCT ride_id) AS number_of_trips,
+COUNT ride_id AS number_of_trips,
 day_of_week
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
@@ -319,7 +343,7 @@ ORDER BY number_of_trips DESC
   - Least popular day: **Sunday** (402,425 trips)
 ```sql
 SELECT 
-COUNT(DISTINCT ride_id) AS number_of_trips,
+COUNT ride_id AS number_of_trips,
 day_of_week
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
@@ -333,7 +357,7 @@ ORDER BY number_of_trips DESC
   - Least popular month: **January**
 ```sql
 SELECT 
-COUNT(DISTINCT ride_id) AS number_of_trips,
+COUNT ride_id AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
@@ -346,7 +370,7 @@ ORDER BY number_of_trips DESC
   - Least popular month: **February**
 ```sql
 SELECT 
-COUNT(DISTINCT ride_id) AS number_of_trips,
+COUNT ride_id AS number_of_trips,
 month
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
@@ -364,7 +388,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(DISTINCT ride_id) AS number_of_rides
+COUNT ride_id AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'casual'
 GROUP BY user_type, time_of_day
@@ -378,7 +402,7 @@ ORDER BY number_of_rides DESC
 SELECT 
 user_type,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
-COUNT(DISTINCT ride_id) AS number_of_rides
+COUNT ride_id AS number_of_rides
 FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE user_type = 'member'
 GROUP BY user_type, time_of_day
