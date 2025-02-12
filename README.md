@@ -55,7 +55,7 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 1. No missing `ride_id` values:
    ```sql
    SELECT COUNT(*)
-   FROM `model-framing-412705.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
    WHERE ride_id IS NULL;
    ```
 
