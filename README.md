@@ -129,6 +129,7 @@ WHERE
   AND TIMESTAMP_DIFF(ended_at, started_at, MINUTE) > 0
 ORDER BY
   start_time;
+```
 
 # Trends and Relationships in Bike Usage
 
