@@ -104,7 +104,7 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 --This query creates a new table. In this new table, I created three new columns called 'day_of_week', 'month', and 'trip_duration_minutes. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
 
 ```sql
-CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report` AS
+CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report1` AS
 SELECT
   ride_id,
   rideable_type AS bike_type,
@@ -202,8 +202,8 @@ WHERE user_type = 'member'
 ```sql
 WITH bike_stats AS (
   SELECT 
-    user_type,
     bike_type,
+    user_type,
     ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration,
     COUNT(DISTINCT ride_id) AS number_of_trips
   FROM 
@@ -235,8 +235,8 @@ ORDER BY
 
 ### Classic Bikes vs. Electric Bikes by user_type
 
-- Members prefer **classic bicycles**, making **1,801,660**.
-- Casual riders prefer **electric bicycles**, making **1,080,286 trips**.
+- Members prefer **classic bicycles**, making **1,801,659**.
+- Casual riders prefer **electric bicycles**, making **1,080,285 trips**.
 ```sql
 SELECT 
   user_type,
