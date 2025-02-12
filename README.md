@@ -55,35 +55,35 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 1. No missing `ride_id` values:
    ```sql
    SELECT COUNT(*)
-   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE ride_id IS NULL;
    ```
 
 2. No missing `rideable_type` values:
    ```sql
    SELECT COUNT(*) AS missing_ride_id
-   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE ride_id IS NULL;
    ```
 
 3. No missing `started_at` values:
    ```sql
    SELECT COUNT(*)
-   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE started_at IS NULL;
    ```
 
 4. No missing `ended_at` values:
    ```sql
    SELECT COUNT(*)
-   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE ended_at IS NULL;
    ```
 
 5. No missing `member_casual` values:
    ```sql
    SELECT COUNT(*)
-   FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+   FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
    WHERE member_casual IS NULL;
    ```
 
@@ -104,7 +104,7 @@ To ensure data quality, we examined specific columns for empty (NULL) fields:
 --This query creates a new table. In this new table, I created three new columns called 'day_of_week' and 'minutes_per_trip' and 'month'. I also changed the name of the columns 'rideable_type', 'started_at', 'ended_at', and 'member_casual'
 
 ```sql
-CREATE TABLE `snappy-elf-359008.cyclistic.trip_data_report` AS
+CREATE TABLE `snappy-elf-359008.Cyclistic.trip_data_report` AS
 SELECT
   ride_id,
   rideable_type AS type_of_bike,
@@ -146,7 +146,7 @@ SELECT
 FROM
   (
     SELECT *
-    FROM `snappy-elf-359008.cyclistic.12month_tripdata`
+    FROM `snappy-elf-359008.Cyclistic.12month_tripdata`
     WHERE rideable_type != "docked_bike" 
       AND DATETIME_DIFF(ended_at, started_at, MINUTE) > 0
   ) AS filtered_data
@@ -166,7 +166,7 @@ In this section, we explore trends and relationships in bike usage data from Cyc
 ```sql
 SELECT 
 ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_casual
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 
@@ -175,7 +175,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(MAX(minutes_per_trip), 2) AS max_min_per_trip_member
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 
@@ -186,7 +186,7 @@ WHERE membership_status = 'member'
 ```sql
 SELECT 
 ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_casual
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 
@@ -195,7 +195,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(MIN(minutes_per_trip), 2) AS min_min_per_trip_member
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 
@@ -206,7 +206,7 @@ WHERE membership_status = 'member'
 ```sql
 SELECT 
 ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_casual
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 ```
 - **Member Riders**:
@@ -214,7 +214,7 @@ WHERE membership_status = 'casual'
 ```sql
 SELECT 
 ROUND(AVG(minutes_per_trip), 2) AS avg_min_per_trip_member
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 ```
 ## Bike Type Analysis
@@ -238,7 +238,7 @@ SELECT
 DISTINCT type_of_bike,
 minutes_per_trip,
 COUNT(ride_id) as number_of_trips
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY minutes_per_trip, type_of_bike
 ORDER BY number_of_trips DESC 
@@ -252,7 +252,7 @@ LIMIT 20
 SELECT 
 type_of_bike,
 COUNT(DISTINCT ride_id) as number_of_trips
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY type_of_bike
 ORDER BY number_of_trips DESC 
@@ -271,7 +271,7 @@ SELECT
 DISTINCT type_of_bike,
 minutes_per_trip,
 COUNT(ride_id) as number_of_trips
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY minutes_per_trip, type_of_bike
 ORDER BY number_of_trips DESC 
@@ -288,7 +288,7 @@ LIMIT 5
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 day_of_week
-FROM snappy-elf-359008.cyclistic.trip_data_report`
+FROM snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
@@ -301,7 +301,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 day_of_week
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY day_of_week
 ORDER BY number_of_trips DESC
@@ -315,7 +315,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 month
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY month
 ORDER BY number_of_trips DESC
@@ -328,7 +328,7 @@ ORDER BY number_of_trips DESC
 SELECT 
 COUNT(membership_status) AS number_of_trips,
 month
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY month
 ORDER BY number_of_trips DESC
@@ -345,7 +345,7 @@ SELECT
 membership_status,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
 COUNT(*) as number_of_rides
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'casual'
 GROUP BY membership_status, time_of_day
 ORDER BY number_of_rides DESC
@@ -359,7 +359,7 @@ SELECT
 membership_status,
 EXTRACT(HOUR FROM start_time) AS time_of_day,
 COUNT(*) as number_of_rides
-FROM `snappy-elf-359008.cyclistic.trip_data_report`
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
 WHERE membership_status = 'member'
 GROUP BY membership_status, time_of_day
 ORDER BY number_of_rides DESC
