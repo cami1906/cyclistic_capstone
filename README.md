@@ -130,18 +130,6 @@ WHERE
 ORDER BY
   start_time;
 
--- Trends and Relationships in Bike Usage
--- Trip Duration Analysis
--- Maximum Trip Duration
-SELECT
-  user_type,
-  MAX(trip_duration_minutes) AS max_trip_duration
-FROM
-  `snappy-elf-359008.Cyclistic.trip_data_report`
-GROUP BY
-  user_type;
-```
-
 # Trends and Relationships in Bike Usage
 
 In this section, we explore trends and relationships in bike usage data from Cyclistic, focusing on differences between annual members and casual riders. We'll analyze key metrics related to trip duration and bike types.
