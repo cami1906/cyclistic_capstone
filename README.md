@@ -197,15 +197,60 @@ WHERE user_type = 'member'
 ```
 ## Bike Type Analysis
 
-### Most Frequent Bike Type for Casual Riders
+### Overall ranking of number of trips 
+  - Members were the most frequent users of the system, with classic bicycles being their preferred choice, followed by electric bikes. Among casual riders, electric bikes were more popular than classic bikes, making classic bike rides by casual users the least common.
+```sql
+WITH bike_stats AS (
+  SELECT 
+    user_type,
+    bike_type,
+    ROUND(AVG(trip_duration_minutes), 2) AS avg_trip_duration,
+    COUNT(ride_id) AS number_of_trips
+  FROM 
+    `snappy-elf-359008.Cyclistic.trip_data_report`
+  GROUP BY 
+    user_type, bike_type
+),
+ranked_bikes AS (
+  SELECT 
+    bike_type,
+    user_type,
+    avg_trip_duration,
+    number_of_trips,
+    RANK() OVER (ORDER BY number_of_trips DESC) AS overall_rank
+  FROM 
+    bike_stats
+)
+SELECT 
+  overall_rank,
+  bike_type,
+  user_type,
+  avg_trip_duration,
+  FORMAT('%,d', number_of_trips) AS formatted_number_of_trips
+FROM 
+  ranked_bikes
+ORDER BY 
+  overall_rank;
+```
 
-- **Bike Type**: Electric Bike
-- **Average Trip Duration**: 6 minutes per trip
-- **Number of Trips**: 74,409
+### Classic Bikes vs. Electric Bikes by user_type
 
-### Classic Bikes vs. Electric Bikes by membership status
-
-- Among casual riders, the most frequent bike type is **classic bicycles**, with **41,006 trips**.
+- Members prefer **classic bicycles**, making **1,801,660**.
+- Casual riders prefer **electric bicycles**, making **1,080,286 trips**.
+```sql
+SELECT DISTINCT
+  user_type,
+  bike_type,
+  COUNT(ride_id) AS number_of_trips
+FROM 
+  `snappy-elf-359008.Cyclistic.trip_data_report`
+GROUP BY 
+  user_type,
+  bike_type
+ORDER BY 
+  user_type,
+  number_of_trips DESC;
+```
 
 ## Casual Riders vs. Members: Bike Usage Trends
 
@@ -224,8 +269,8 @@ LIMIT 20
 ```
 ### Most Frequent Bike Type for Casual Riders
 
-- **Electric Bikes**: Casual riders took **1,080,285 trips** on electric bikes.
-- **Classic Bikes**: Casual riders took **870,139 trips** on classic bikes.
+- **Electric Bikes**: Casual riders took **1,080,286 trips** on electric bikes.
+- **Classic Bikes**: Casual riders took **870,140 trips** on classic bikes.
 ```sql
 SELECT 
 bike_type,
