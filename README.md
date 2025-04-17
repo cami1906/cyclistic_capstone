@@ -221,8 +221,21 @@ WHERE user_type = 'member'
 ```
 ## Bike Type Analysis
 
-### Overall ranking of number of trips 
-  - Members were the most frequent users of the system, with classic bicycles being their preferred choice, followed by electric bikes. Among casual riders, electric bikes were more popular than classic bikes, making classic bike rides by casual users the least common.
+### Overall ranking of number of trips
+```sql
+SELECT
+  user_type,
+  COUNT (DISTINCT ride_id) AS number_of_rides
+FROM `snappy-elf-359008.Cyclistic.trip_data_report`
+GROUP BY user_type
+```  
+  - Members were the most frequent users of the system with 3,602,639 trips. Classic bicycles being their preferred choice, followed by electric bikes. Casual riders made 1,950,421, where electric bikes were more popular than classic bikes, making classic bike rides by casual users the least common.
+
+
+### Classic Bikes vs. Electric Bikes by user_type
+
+- Members prefer **classic bicycles**, making **1,801,658**.
+- Casual riders prefer **electric bicycles**, making **1,080,283 trips**.
 ```sql
 WITH bike_stats AS (
   SELECT 
@@ -255,25 +268,6 @@ FROM
   ranked_bikes
 ORDER BY 
   overall_rank;
-```
-
-### Classic Bikes vs. Electric Bikes by user_type
-
-- Members prefer **classic bicycles**, making **1,801,658**.
-- Casual riders prefer **electric bicycles**, making **1,080,283 trips**.
-```sql
-SELECT 
-  user_type,
-  bike_type,
-  COUNT (ride_id) AS number_of_trips
-FROM 
-  `snappy-elf-359008.Cyclistic.trip_data_report`
-GROUP BY 
-  user_type,
-  bike_type
-ORDER BY 
-  user_type,
-  number_of_trips DESC;
 ```
 
 ## Casual Riders vs. Members: Bike Usage Trends
